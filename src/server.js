@@ -1,10 +1,8 @@
-import Fastify from "fastify";
+import fastify from "fastify";
 import logger from "./logger.js";
 import "./otel.js";
 
-const app = Fastify({
-  logger: true,
-});
+const app = fastify({ logger: { instance: logger } });
 
 app.addHook("onRequest", async (request) => {
   request.startTime = Date.now();
@@ -25,34 +23,17 @@ app.addHook("onResponse", async (request, reply) => {
 });
 
 app.get("/health", async () => {
-  return {
-    status: "ok",
-  };
+  return { status: "ok" };
 });
 
-app.get("/usuarios", async (request, reply) => {
-  logger.info(
-    {
-      requestId: request.id,
-      endpoint: request.url,
-      method: request.method,
-      latency,
-    },
-    "Requisição concluída",
-  );
-
+app.get("/usuarios", async () => {
   return [];
 });
 
 try {
-  await app.listen({
-    port: 3000,
-    host: "0.0.0.0",
-  });
-
+  await app.listen({ port: 3000, host: "0.0.0.0" });
   logger.info("API iniciada");
 } catch (err) {
   logger.error(err);
-
   process.exit(1);
 }

@@ -9,6 +9,8 @@ import {
 import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
 import { PinoInstrumentation } from "@opentelemetry/instrumentation-pino";
+import { Resource } from "@opentelemetry/resources";
+import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 
 const logsEndpoint = `${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}/v1/logs`;
 const tracesEndpoint = `${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}/v1/traces`;
@@ -21,18 +23,25 @@ export const loggerProvider = new LoggerProvider({
 });
 
 const sdk = new NodeSDK({
-  loggerProvider,
-  spanProcessor: new BatchSpanProcessor(
-    new OTLPTraceExporter({ url: tracesEndpoint }),
-  ),
-  metricReader: new PeriodicExportingMetricReader({
-    exporter: new OTLPMetricExporter({ url: metricsEndpoint }),
+  resource: new Resource({
+    [ATTR_SERVICE_NAME]: "api-test",
   }),
-  instrumentations: [
-    new PinoInstrumentation({
-      logHook: (record) => ({ "service.name": "tqr-api" }),
+
+  loggerProvider,
+
+  spanProcessor: new BatchSpanProcessor(
+    new OTLPTraceExporter({
+      url: tracesEndpoint,
     }),
-  ],
+  ),
+
+  metricReader: new PeriodicExportingMetricReader({
+    exporter: new OTLPMetricExporter({
+      url: metricsEndpoint,
+    }),
+  }),
+
+  instrumentations: [new PinoInstrumentation()],
 });
 
 sdk.start();

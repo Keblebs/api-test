@@ -2,7 +2,7 @@ import fastify from "fastify";
 import logger from "./logger.js";
 import "./otel.js";
 
-const app = fastify({ logger: { instance: logger } });
+const app = fastify({ logger } });
 
 app.addHook("onRequest", async (request) => {
   request.startTime = Date.now();
@@ -11,7 +11,7 @@ app.addHook("onRequest", async (request) => {
 app.addHook("onResponse", async (request, reply) => {
   const latency = Date.now() - request.startTime;
 
-  logger.info(
+  request.log.info(
     {
       endpoint: request.url,
       method: request.method,

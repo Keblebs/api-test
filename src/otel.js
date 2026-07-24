@@ -9,13 +9,14 @@ import {
 import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
 import { PinoInstrumentation } from "@opentelemetry/instrumentation-pino";
-import { Resource } from "@opentelemetry/resources";
 import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 
 const logsEndpoint = `${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}/v1/logs`;
 const tracesEndpoint = `${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}/v1/traces`;
 const metricsEndpoint = `${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}/v1/metrics`;
 
+import pkg from "@opentelemetry/resources";
+const { Resource } = pkg;
 export const loggerProvider = new LoggerProvider({
   processors: [
     new BatchLogRecordProcessor(new OTLPLogExporter({ url: logsEndpoint })),

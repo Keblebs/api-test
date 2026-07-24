@@ -2,7 +2,7 @@ import fastify from "fastify";
 import logger from "./logger.js";
 import "./otel.js";
 
-const app = fastify({ logger } });
+const app = fastify({ logger });
 
 app.addHook("onRequest", async (request) => {
   request.startTime = Date.now();

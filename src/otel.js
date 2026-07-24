@@ -15,8 +15,7 @@ const logsEndpoint = `${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}/v1/logs`;
 const tracesEndpoint = `${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}/v1/traces`;
 const metricsEndpoint = `${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}/v1/metrics`;
 
-import pkg from "@opentelemetry/resources";
-const { Resource } = pkg;
+import { resourceFromAttributes } from "@opentelemetry/resources";
 export const loggerProvider = new LoggerProvider({
   processors: [
     new BatchLogRecordProcessor(new OTLPLogExporter({ url: logsEndpoint })),
@@ -24,10 +23,7 @@ export const loggerProvider = new LoggerProvider({
 });
 
 const sdk = new NodeSDK({
-  resource: new Resource({
-    [ATTR_SERVICE_NAME]: "api-test",
-  }),
-
+  resource: resourceFromAttributes({ [ATTR_SERVICE_NAME]: "api-test" }),
   loggerProvider,
 
   spanProcessor: new BatchSpanProcessor(

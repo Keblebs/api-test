@@ -11,8 +11,8 @@ import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
 import { PinoInstrumentation } from "@opentelemetry/instrumentation-pino";
 
 const logsEndpoint = `${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}/v1/logs`;
-const tracesEndpoint = `${process.env.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT}/v1/traces`;
-const metricsEndpoint = `${process.env.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT}/v1/metrics`;
+const tracesEndpoint = `${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}/v1/traces`;
+const metricsEndpoint = `${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}/v1/metrics`;
 
 export const loggerProvider = new LoggerProvider({
   processors: [

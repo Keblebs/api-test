@@ -15,6 +15,7 @@ app.addHook("onResponse", async (request, reply) => {
 
   request.log.info(
     {
+      request_id: request.id,
       endpoint: request.url,
       method: request.method,
       statusCode: reply.statusCode,

@@ -18,6 +18,8 @@ app.addHook("onResponse", async (request, reply) => {
       endpoint: request.url,
       method: request.method,
       statusCode: reply.statusCode,
+      request: request.body,
+      response: reply.body,
       latency,
     },
     "Requisição concluída",

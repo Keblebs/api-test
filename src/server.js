@@ -33,7 +33,7 @@ await app.register(fastifySwagger, {
     },
     servers: [
       {
-        url: "http://api-test-tqr-api.apps.hmlg.datacenter.local",
+        url: "https://api-test-tqr-api.apps.hmlg.datacenter.local",
       },
     ],
     components: {

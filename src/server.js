@@ -2,8 +2,8 @@ import fastify from "fastify";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import logger from "./logger.js";
-import "./otel.js";
 import { metrics } from "@opentelemetry/api";
+import "./otel.js";
 
 const meter = metrics.getMeter("api-test");
 const requestCounter = meter.createCounter("http_requests_total", {
@@ -118,6 +118,20 @@ app.get("/usuarios", {
   async handler() {
     return [];
   },
+});
+
+import { trace } from "@opentelemetry/api";
+
+fastify.get("/otel-test", async () => {
+  const tracer = trace.getTracer("api-test");
+
+  const span = tracer.startSpan("span-manual");
+
+  await new Promise((r) => setTimeout(r, 100));
+
+  span.end();
+
+  return { ok: true };
 });
 
 try {

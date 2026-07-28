@@ -1,4 +1,6 @@
 import fastify from "fastify";
+import fastifySwagger from "@fastify/swagger";
+import fastifySwaggerUi from "@fastify/swagger-ui";
 import logger from "./logger.js";
 import "./otel.js";
 import { metrics } from "@opentelemetry/api";
@@ -20,6 +22,31 @@ const sanitize = (obj) => {
 
 const app = fastify({
   logger: { instance: logger },
+});
+
+await app.register(fastifySwagger, {
+  openapi: {
+    info: {
+      title: "API Test",
+      version: "1.0.0",
+      description: "API com observabilidade completa",
+    },
+    servers: [
+      {
+        url: "http://api-test-tqr-api.apps.hmlg.datacenter.local",
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: { type: "http", scheme: "bearer" },
+      },
+    },
+  },
+});
+
+await app.register(fastifySwaggerUi, {
+  routePrefix: "/docs",
+  uiConfig: { docExpansion: "list", deepLinking: true },
 });
 
 app.addHook("onRequest", async (request) => {
@@ -54,17 +81,50 @@ app.addHook("onResponse", async (request, reply) => {
   );
 });
 
-app.get("/health", async () => {
-  return { status: "ok" };
+app.get("/health", {
+  schema: {
+    tags: ["Health"],
+    summary: "Health check",
+    response: {
+      200: {
+        type: "object",
+        properties: { status: { type: "string" } },
+      },
+    },
+  },
+  async handler() {
+    return { status: "ok" };
+  },
 });
 
-app.get("/usuarios", async () => {
-  return [];
+app.get("/usuarios", {
+  schema: {
+    tags: ["Usuários"],
+    summary: "Lista usuários",
+    response: {
+      200: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            id: { type: "integer" },
+            nome: { type: "string" },
+            email: { type: "string" },
+          },
+        },
+      },
+    },
+  },
+  async handler() {
+    return [];
+  },
 });
 
 try {
+  await app.ready();
   await app.listen({ port: 3000, host: "0.0.0.0" });
   logger.info("API iniciada");
+  logger.info("Documentação: http://localhost:3000/docs");
 } catch (err) {
   logger.error(err);
   process.exit(1);

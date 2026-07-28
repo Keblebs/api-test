@@ -120,20 +120,6 @@ app.get("/usuarios", {
   },
 });
 
-import { trace } from "@opentelemetry/api";
-
-app.get("/otel-test", async () => {
-  const tracer = trace.getTracer("api-test");
-
-  const span = tracer.startSpan("span-manual");
-
-  await new Promise((r) => setTimeout(r, 100));
-
-  span.end();
-
-  return { ok: true };
-});
-
 try {
   await app.ready();
   await app.listen({ port: 3000, host: "0.0.0.0" });
